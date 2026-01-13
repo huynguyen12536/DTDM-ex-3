@@ -1,6 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+// Load cart from localStorage
+const loadCartFromStorage = () => {
+  try {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      return JSON.parse(savedCart);
+    }
+  } catch (error) {
+    console.error('Error loading cart from localStorage:', error);
+  }
+  return null;
+};
+
+// Save cart to localStorage
+const saveCartToStorage = (state) => {
+  try {
+    localStorage.setItem('cart', JSON.stringify(state));
+  } catch (error) {
+    console.error('Error saving cart to localStorage:', error);
+  }
+};
+
+const defaultState = {
   products: [],
   selectedItems: 0,
   totalPrice: 0,
@@ -8,6 +30,9 @@ const initialState = {
   taxRate: 0.05,
   grandTotal: 0,
 };
+
+// Use saved cart or default state
+const initialState = loadCartFromStorage() || defaultState;
 
 export const cartSlice = createSlice({
   name: "cart",
@@ -24,6 +49,7 @@ export const cartSlice = createSlice({
       state.totalPrice = selectTotalPrice(state);
       state.tax = selectTax(state);
       state.grandTotal = selectGrandTotal(state);
+      saveCartToStorage(state);
     },
     updateQuantity: (state, action) => {
       const products = state.products.map((product) => {
@@ -42,6 +68,7 @@ export const cartSlice = createSlice({
       state.totalPrice = selectTotalPrice(state);
       state.tax = selectTax(state);
       state.grandTotal = selectGrandTotal(state);
+      saveCartToStorage(state);
     },
     removeFromCart: (state, action) => {
       state.products = state.products.filter(
@@ -51,6 +78,7 @@ export const cartSlice = createSlice({
       state.totalPrice = selectTotalPrice(state);
       state.tax = selectTax(state);
       state.grandTotal = selectGrandTotal(state);
+      saveCartToStorage(state);
     },
     clearCart: (state) => {
       state.products = [];
@@ -58,6 +86,7 @@ export const cartSlice = createSlice({
       state.totalPrice = 0;
       state.tax = 0;
       state.grandTotal = 0;
+      saveCartToStorage(state);
     },
   },
 });

@@ -64,7 +64,6 @@ const Navbar = () => {
         <ul className="nav__links">
           <li className="link"><Link to="/">Trang chủ</Link></li>
           <li className="link"><Link to="/shop">Cửa hàng</Link></li>
-          <li className="link"><Link to="/">Trang</Link></li>
           <li className="link"><Link to="/contact">Liên hệ</Link></li>
         </ul>
         <div className="nav__logo">

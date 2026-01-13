@@ -12,6 +12,7 @@ import Register from '../components/Register';
 import DashboardLayout from '../pages/dashboard/DashboardLayout';
 import PrivateRoute from './PrivateRoute';
 import SingleProduct from '../pages/shop/productdetais/SingleProduct';
+import CartPage from '../pages/shop/CartPage';
 import PaymentSuccess from '../components/PaymentSuccess';
 import UserOrders from '../pages/dashboard/user/UserOrders';
 import UserPayments from '../pages/dashboard/user/UserPayments';
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
       { path: 'search', element: <Search /> },
       { path: 'shop/:id', element: <SingleProduct /> },
       { path: 'success', element: <PaymentSuccess /> },
+      { path: 'cart', element: <CartPage /> },
       { path: 'orders/:orderId', element: <OrderDetails /> },
       { path: '*', element: <ErrorPage /> },
     ],

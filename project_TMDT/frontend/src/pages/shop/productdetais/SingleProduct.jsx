@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useFetchProductByIdQuery } from '../../../redux/features/products/productsApi';
 import RatingStars from '../../../components/RatingStars';
@@ -9,6 +9,7 @@ import ReviewsCard from '../reviews/ReviewsCard';
 const SingleProduct = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
+    const [showNotification, setShowNotification] = useState(false);
 
     // Fetch product by ID using the hook
     const { data, error, isLoading } = useFetchProductByIdQuery(id);
@@ -21,6 +22,9 @@ const SingleProduct = () => {
     const handleAddToCart = (product) => {
         console.log(product)
         dispatch(addToCart(product));
+        setShowNotification(true);
+        // Auto hide notification after 3 seconds
+        setTimeout(() => setShowNotification(false), 3000);
     };
 
     if (isLoading) return <p>Loading product details...</p>;
@@ -75,9 +79,22 @@ const SingleProduct = () => {
                                 e.stopPropagation();
                                 handleAddToCart(singleProduct)
                             }}
-                            className="mt-6 px-6 py-3 bg-primary text-white rounded-md">
+                            className="mt-6 px-6 py-3 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors">
                             Add to Cart
                         </button>
+
+                        {/* Success Notification */}
+                        {showNotification && (
+                            <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md flex items-center justify-between animate-pulse">
+                                <div className="flex items-center">
+                                    <i className="ri-checkbox-circle-fill text-green-500 text-xl mr-2"></i>
+                                    <span>Đã thêm vào giỏ hàng thành công!</span>
+                                </div>
+                                <Link to="/cart" className="text-primary hover:underline font-medium">
+                                    Xem giỏ hàng →
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>

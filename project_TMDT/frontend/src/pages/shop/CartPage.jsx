@@ -1,5 +1,5 @@
 import React from 'react'
-import CartDetails from './CartModal'
+import CartDetails from './CartDetails'
 import { useSelector } from 'react-redux';
 import OrderSummary from './OrderSummary';
 
@@ -11,7 +11,7 @@ const CartPage = () => {
         <div className="space-y-5 lg:mt-0 mt-5">
           {products.length ? (
             products.map((product) => (
-              <CartDetails key={product.id} product={product} />
+              <CartDetails key={product._id} product={product} />
             ))
           ) : (
             <p className="text-2xl text-red-500">Không tìm thấy sản phẩm!</p>

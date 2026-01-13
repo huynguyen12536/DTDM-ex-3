@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
-import products from "../../data/products.json";
+import { useFetchAllProductsQuery } from '../../redux/features/products/productsApi';
 
 import ProductCards from './ProductCards';
 
 const TrendingProducts = () => {
   const [visibleProducts, setVisibleProducts] = useState(8);
+  
+  // Fetch products from API instead of static JSON
+  const { data, isLoading, error } = useFetchAllProductsQuery({
+    category: '',
+    color: '',
+    minPrice: 0,
+    maxPrice: '',
+    page: 1,
+    limit: 40
+  });
+
+  const products = data?.products || [];
 
   const loadMoreProducts = () => {
     setVisibleProducts(prevCount => prevCount + 4);
   };
+
+  if (isLoading) return <p className="text-center py-8">Loading products...</p>;
+  if (error) return <p className="text-center py-8 text-red-500">Error loading products.</p>;
 
   return (
     <section className="section__container product__container">
