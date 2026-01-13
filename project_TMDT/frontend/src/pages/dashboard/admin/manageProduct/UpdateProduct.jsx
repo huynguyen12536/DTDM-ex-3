@@ -77,9 +77,14 @@ const UpdateProduct = () => {
         // If newImage is set, use it; otherwise, keep the old image URL
         const updatedProduct = {
             ...product,
-            image: newImage ? newImage : product.image, 
+            image: newImage ? newImage : product.image,
             author: user?._id
         };
+
+        if (!updatedProduct.image) {
+            alert('Vui lòng tải lên hình ảnh sản phẩm.');
+            return;
+        }
 
         try {
             await updateProduct({ id: id, ...updatedProduct }).unwrap();
@@ -141,8 +146,8 @@ const UpdateProduct = () => {
                 <UploadImage
                     name="image"
                     id="image"
-                    value={newImage || product.image} 
-                    setImage={handleImageChange} 
+                    value={newImage || product.image}
+                    setImage={handleImageChange}
                     placeholder='Upload a product image'
                 />
 

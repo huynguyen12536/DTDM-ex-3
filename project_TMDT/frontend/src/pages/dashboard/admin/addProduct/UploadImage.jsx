@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { getBaseUrl } from '../../../../utils/baseURL';
 
 const UploadImage = ({ name, setImage }) => {
     const [loading, setLoading] = useState(false);
@@ -23,13 +24,13 @@ const UploadImage = ({ name, setImage }) => {
     const uploadSingleImage = (base64) => {
         setLoading(true);
         axios
-            .post("http://localhost:5000/uploadImage", { image: base64 })
+            .post(`${getBaseUrl()}/uploadImage`, { image: base64 })
             .then((res) => {
                 const imageUrl = res.data;
                 setUrl(imageUrl);
                 // console.log(imageUrl);
                 alert("Image uploaded successfully");
-                setImage(imageUrl); 
+                setImage(imageUrl);
             })
             .then(() => setLoading(false))
             .catch((error) => {
@@ -63,7 +64,7 @@ const UploadImage = ({ name, setImage }) => {
             </label>
             <input
                 onChange={uploadImage}
-        
+
                 name={name}
                 id={name}
                 type="file"

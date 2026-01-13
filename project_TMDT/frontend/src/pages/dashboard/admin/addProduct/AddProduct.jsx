@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import {useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useAddProductMutation } from '../../../../redux/features/products/productsApi';
 import TextInput from './TextInput';
 import SelectInput from './SelectInput';
 import UploadImage from './UploadImage';
 import { useNavigate } from 'react-router-dom';
+import { getBaseUrl } from '../../../../utils/baseURL';
 
 const categories = [
     { label: 'Chọn danh mục', value: '' },
@@ -39,7 +40,7 @@ const AddProduct = () => {
 
     const [addProduct, { isLoading, error }] = useAddProductMutation();
     const navigate = useNavigate()
-  
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -52,11 +53,17 @@ const AddProduct = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        if (!product.name || !product.category || !product.price  || !product.color || !product.description) {
+
+        if (!product.name || !product.category || !product.price || !product.color || !product.description) {
             alert('Vui lòng điền đầy đủ các trường.');
             return;
         }
+
+        if (!image) {
+            alert('Vui lòng tải lên hình ảnh sản phẩm.');
+            return;
+        }
+
         try {
             await addProduct({ ...product, image, author: user?._id }).unwrap();
             alert('Thêm sản phẩm thành công!');
@@ -111,11 +118,11 @@ const AddProduct = () => {
                      placeholder="Ex: https://unsplash.com/photos/a-group-of-women-in-brightly-colored-outfits.png"
                 /> */}
                 <UploadImage
-                name="image"
-                id="image"
-                value={e => setImage(e.target.value)}
-                placeholder='Viết mô tả sản phẩm'
-                setImage={setImage}
+                    name="image"
+                    id="image"
+                    value={e => setImage(e.target.value)}
+                    placeholder='Viết mô tả sản phẩm'
+                    setImage={setImage}
                 />
 
                 <div>
