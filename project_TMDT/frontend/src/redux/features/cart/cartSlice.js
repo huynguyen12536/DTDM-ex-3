@@ -88,6 +88,26 @@ export const cartSlice = createSlice({
       state.grandTotal = 0;
       saveCartToStorage(state);
     },
+    // Validate cart products against valid product IDs from database
+    validateCart: (state, action) => {
+      const validProductIds = action.payload; // Array of valid product IDs
+      const originalLength = state.products.length;
+      
+      // Filter out products that no longer exist in database
+      state.products = state.products.filter(
+        (product) => validProductIds.includes(product._id)
+      );
+      
+      // If any products were removed, recalculate totals
+      if (state.products.length !== originalLength) {
+        console.log(`Removed ${originalLength - state.products.length} invalid product(s) from cart`);
+        state.selectedItems = selectSelectedItems(state);
+        state.totalPrice = selectTotalPrice(state);
+        state.tax = selectTax(state);
+        state.grandTotal = selectGrandTotal(state);
+        saveCartToStorage(state);
+      }
+    },
   },
 });
 
@@ -106,7 +126,7 @@ export const selectTax = (state) => selectTotalPrice(state) * state.taxRate;
 export const selectGrandTotal = (state) => {
   return selectTotalPrice(state) + selectTotalPrice(state) * state.taxRate;
 };
-export const { addToCart, updateQuantity, removeFromCart, clearCart } =
+export const { addToCart, updateQuantity, removeFromCart, clearCart, validateCart } =
   cartSlice.actions;
 
 export default cartSlice.reducer;

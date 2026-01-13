@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import productsData from '../../data/products.json';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useFetchAllProductsQuery } from '../redux/features/products/productsApi';
 import ProductCards from './ProductCards';
 import ShopFiltering from './ShopFiltering';
 
@@ -15,44 +15,33 @@ const filters = {
 };
 
 const ShopPage = () => {
-    const [products, setProducts] = useState(productsData);
     const [filtersState, setFiltersState] = useState({
         category: 'all',
         color: 'all',
         priceRange: ''
     });
 
-    const applyFilters = () => {
-        let filteredProducts = productsData;
+    // Fetch products from API
+    const { data, isLoading, error } = useFetchAllProductsQuery({
+        category: filtersState.category !== 'all' ? filtersState.category : '',
+        color: filtersState.color !== 'all' ? filtersState.color : '',
+        minPrice: 0,
+        maxPrice: '',
+        page: 1,
+        limit: 100
+    });
 
-        // Filter by category
-        if (filtersState.category && filtersState.category !== 'all') {
-            filteredProducts = filteredProducts.filter(
-                product => product.category === filtersState.category
-            );
-        }
+    const allProducts = data?.products || [];
 
-        // Filter by color
-        if (filtersState.color && filtersState.color !== 'all') {
-            filteredProducts = filteredProducts.filter(
-                product => product.color === filtersState.color
-            );
-        }
-
-        // Filter by price range
-        if (filtersState.priceRange) {
-            const [minPrice, maxPrice] = filtersState.priceRange.split('-').map(Number);
-            filteredProducts = filteredProducts.filter(
-                product => product.price >= minPrice && product.price <= maxPrice
-            );
-        }
-
-        setProducts(filteredProducts);
-    };
-
-    useEffect(() => {
-        applyFilters();
-    }, [filtersState]);
+    // Apply local price range filtering (since API might not support exact price ranges)
+    const products = useMemo(() => {
+        if (!filtersState.priceRange) return allProducts;
+        
+        const [minPrice, maxPrice] = filtersState.priceRange.split('-').map(Number);
+        return allProducts.filter(
+            product => product.price >= minPrice && product.price <= maxPrice
+        );
+    }, [allProducts, filtersState.priceRange]);
 
     const clearFilters = () => {
         setFiltersState({
@@ -62,6 +51,21 @@ const ShopPage = () => {
         });
     };
 
+    if (isLoading) {
+        return (
+            <section className="section__container">
+                <p className="text-center">Đang tải sản phẩm...</p>
+            </section>
+        );
+    }
+
+    if (error) {
+        return (
+            <section className="section__container">
+                <p className="text-center text-red-500">Lỗi khi tải sản phẩm.</p>
+            </section>
+        );
+    }
 
     return (
         <>
@@ -81,9 +85,7 @@ const ShopPage = () => {
                     <div>
                         <h3 className='text-xl font-medium mb-4'>Products Available: {products.length}</h3>
                         <ProductCards products={products}/>
-                        
                     </div>
-
                 </div>
             </section>
         </>

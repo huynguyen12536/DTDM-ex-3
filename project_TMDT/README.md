@@ -36,3 +36,15 @@ Note: Please setup mongodb and change the MongoDB url and set your jwt secret ke
 ```
 
 - Finally, to run the project, use ``npm run start:dev`` command.
+
+
+Khi bạn chỉnh sửa file local, code trong Docker container không tự động cập nhật. Container sử dụng code đã được copy vào lúc build.
+
+Giải pháp: Mỗi khi thay đổi code, bạn cần rebuild container:
+
+# Rebuild backend container
+docker-compose up -d --build backend
+docker-compose up -d --build frontend
+
+# Sau đó chạy lại script
+docker exec project_tmdt-backend-1 node scripts/seedProducts.js

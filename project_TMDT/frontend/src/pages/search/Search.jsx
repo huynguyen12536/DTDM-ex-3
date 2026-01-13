@@ -1,20 +1,59 @@
-import React, { useState } from 'react';
-import productsData from '../../data/products.json';
+import React, { useState, useMemo } from 'react';
+import { useFetchAllProductsQuery } from '../../redux/features/products/productsApi';
 import ProductCards from '../shop/ProductCards';
 
 const Search = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredProducts, setFilteredProducts] = useState(productsData);
+    const [searchTerm, setSearchTerm] = useState('');
+    
+    // Fetch all products from API (with high limit to get all)
+    const { data, isLoading, error } = useFetchAllProductsQuery({
+        category: '',
+        color: '',
+        minPrice: 0,
+        maxPrice: '',
+        page: 1,
+        limit: 100
+    });
 
-    const handleSearch = () => {
-        const query = searchQuery.toLowerCase();
+    const products = data?.products || [];
 
-        const filtered = productsData.filter(product =>
+    // Filter products based on search term
+    const filteredProducts = useMemo(() => {
+        if (!searchTerm) return products;
+        
+        const query = searchTerm.toLowerCase();
+        return products.filter(product =>
             product.name.toLowerCase().includes(query) ||
             product.description.toLowerCase().includes(query)
         );
-        setFilteredProducts(filtered);
+    }, [products, searchTerm]);
+
+    const handleSearch = () => {
+        setSearchTerm(searchQuery);
     };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <section className="section__container">
+                <p className="text-center">Đang tải sản phẩm...</p>
+            </section>
+        );
+    }
+
+    if (error) {
+        return (
+            <section className="section__container">
+                <p className="text-center text-red-500">Lỗi khi tải sản phẩm.</p>
+            </section>
+        );
+    }
 
     return (
         <>
@@ -31,6 +70,7 @@ const Search = () => {
                         placeholder="Tìm kiếm sản phẩm..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyPress={handleKeyPress}
                         className="search-bar w-full max-w-4xl p-2 border rounded"
                     />
                     <button
@@ -40,11 +80,14 @@ const Search = () => {
                         Tìm kiếm
                     </button>
                 </div>
+                {searchTerm && (
+                    <p className="text-center mb-4 text-gray-600">
+                        Tìm thấy {filteredProducts.length} kết quả cho "{searchTerm}"
+                    </p>
+                )}
                 <ProductCards products={filteredProducts}/>
-                
             </section>
         </>
-
     );
 };
 
