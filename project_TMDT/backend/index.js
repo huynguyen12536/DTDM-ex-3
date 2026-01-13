@@ -15,9 +15,9 @@ app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ limit: "25mb" }));
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));  
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(cors({ 
+app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost', 'http://localhost:80'],
   credentials: true,
 }));
@@ -87,13 +87,13 @@ async function main() {
   try {
     await mongoose.connect(mongoUrl);
     console.log('✅ Mongodb connected successfully!');
-    
+
     // Create default user after connection
     await createDefaultUser();
   } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
   }
-  
+
   app.get('/', (req, res) => {
     res.send('Lebaba Ecommerce Server is Running..!');
   });
@@ -104,7 +104,7 @@ main();
 
 
 // upload image routes
-app.post("/uploadImage", (req, res) => {
+app.post("/api/uploadImage", (req, res) => {
   uploadImage(req.body.image)
     .then((url) => res.send(url))
     .catch((err) => res.status(500).send(err));

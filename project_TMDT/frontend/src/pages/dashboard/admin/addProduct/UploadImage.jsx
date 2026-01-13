@@ -24,7 +24,7 @@ const UploadImage = ({ name, setImage }) => {
     const uploadSingleImage = (base64) => {
         setLoading(true);
         axios
-            .post(`${getBaseUrl()}/uploadImage`, { image: base64 })
+            .post(`${getBaseUrl()}/api/uploadImage`, { image: base64 })
             .then((res) => {
                 const imageUrl = res.data;
                 setUrl(imageUrl);
