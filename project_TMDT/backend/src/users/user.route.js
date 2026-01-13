@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('./user.model');
+const mongoose = require("mongoose");
 const generateToken = require('../middleware/generateToken');
 const verifyToken = require('../middleware/verifyToken');
 require('dotenv').config()
@@ -34,22 +35,26 @@ router.post('/login', async (req, res) => {
             return res.status(401).send({ message: 'Invalid credentials' });
         }
 
-        
-        const token = await generateToken(user._id); 
+
+        const token = await generateToken(user._id);
 
         const isProd = process.env.NODE_ENV === 'production';
-        res.cookie('token', token, { httpOnly: true,
+        res.cookie('token', token, {
+            httpOnly: true,
             secure: isProd,
-            sameSite: isProd ? 'None' : 'Lax'});
-        res.status(200).send({ message: 'Logged in successfully', token, user: {
-            _id: user._id,
-            email: user.email,
-            username: user.username,
-            role: user.role,
-            profileImage: user.profileImage,
-            bio: user.bio,
-            profession: user.profession,
-        } });
+            sameSite: isProd ? 'None' : 'Lax'
+        });
+        res.status(200).send({
+            message: 'Logged in successfully', token, user: {
+                _id: user._id,
+                email: user.email,
+                username: user.username,
+                role: user.role,
+                profileImage: user.profileImage,
+                bio: user.bio,
+                profession: user.profession,
+            }
+        });
     } catch (error) {
         console.error('Error logging in:', error);
         res.status(500).send({ message: 'Login failed' });
@@ -58,7 +63,7 @@ router.post('/login', async (req, res) => {
 
 // Logout endpoint (optional)
 router.post('/logout', (req, res) => {
-    res.clearCookie('token'); 
+    res.clearCookie('token');
     res.status(200).send({ message: 'Logged out successfully' });
 });
 
@@ -79,6 +84,9 @@ router.get('/users', async (req, res) => {
 router.delete('/users/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).send({ message: "User not found" });
+        }
         const user = await User.findByIdAndDelete(id);
         if (!user) {
             return res.status(404).send({ message: 'User not found' });
@@ -95,6 +103,9 @@ router.put('/users/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { role } = req.body;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).send({ message: "User not found" });
+        }
         const user = await User.findByIdAndUpdate(id, { role }, { new: true });
         if (!user) {
             return res.status(404).send({ message: 'User not found' });

@@ -1,5 +1,6 @@
 const express = require("express");
 const Order = require("./orders.model");
+const mongoose = require("mongoose");
 const router = express.Router();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -88,7 +89,7 @@ router.get("/:email", async (req, res) => {
   if (!email) {
     return res.status(400).json({ message: "Email parameter is required" });
   }
- 
+
 
   try {
     const orders = await Order.find({ email: email }).sort({ createdAt: -1 });
@@ -106,8 +107,12 @@ router.get("/:email", async (req, res) => {
 
 router.get("/order/:id", async (req, res) => {
   // console.log(req.params.id);
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ message: "Order not found" });
+  }
   try {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(id);
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
@@ -122,7 +127,7 @@ router.get("/order/:id", async (req, res) => {
 router.get('/', async (req, res) => {
 
   try {
-    const orders = await Order.find().sort({createdAt: -1});
+    const orders = await Order.find().sort({ createdAt: -1 });
     if (orders.length === 0) {
       console.log('No orders found');
       return res.status(200).json({ message: "No orders found", orders: [] });
@@ -138,33 +143,38 @@ router.get('/', async (req, res) => {
 // update order status
 router.patch('/update-order-status/:id', async (req, res) => {
   try {
-      const { id } = req.params;
-      // console.log(id);
-      const { status } = req.body;
+    const { id } = req.params;
+    // console.log(id);
 
-      // console.log(status)
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ message: "Order not found" });
+    }
 
-      if (!status) {
-          return res.status(400).json({ message: "Order status is required" });
-      }
+    const { status } = req.body;
 
-      const updatedOrder = await Order.findByIdAndUpdate(
-          id,
-          { status, updatedAt: Date.now() },
-          { new: true, runValidators: true }
-      );
+    // console.log(status)
 
-      if (!updatedOrder) {
-          return res.status(404).json({ message: "Order not found" });
-      }
+    if (!status) {
+      return res.status(400).json({ message: "Order status is required" });
+    }
 
-      res.status(200).json({
-          message: "Order status updated successfully",
-          order: updatedOrder
-      });
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { status, updatedAt: Date.now() },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json({
+      message: "Order status updated successfully",
+      order: updatedOrder
+    });
   } catch (error) {
-      console.error("Error updating order status:", error);
-      res.status(500).json({ message: "Server error" });
+    console.error("Error updating order status:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -172,6 +182,10 @@ router.patch('/update-order-status/:id', async (req, res) => {
 router.delete('/delete-order/:id', async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ message: "Order not found" });
+    }
 
     const deletedOrder = await Order.findByIdAndDelete(id);
 
@@ -206,8 +220,8 @@ router.post("/cod-checkout", async (req, res) => {
     for (let i = 0; i < products.length; i++) {
       const product = products[i];
       if (!product._id && !product.id) {
-        return res.status(400).json({ 
-          message: `Each product must include an id. Product at index ${i} is missing id.` 
+        return res.status(400).json({
+          message: `Each product must include an id. Product at index ${i} is missing id.`
         });
       }
     }
@@ -243,9 +257,9 @@ router.post("/cod-checkout", async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating COD order:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Không thể tạo đơn hàng COD",
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -262,7 +276,7 @@ try {
 router.post("/create-momo-payment", async (req, res) => {
   try {
     if (!momoPayment) {
-      return res.status(503).json({ 
+      return res.status(503).json({
         message: "MoMo payment service is not available. Please check server configuration.",
         error: "MoMo module not loaded"
       });
@@ -282,8 +296,8 @@ router.post("/create-momo-payment", async (req, res) => {
     for (let i = 0; i < products.length; i++) {
       const product = products[i];
       if (!product._id && !product.id) {
-        return res.status(400).json({ 
-          message: `Each product must include an id. Product at index ${i} is missing id.` 
+        return res.status(400).json({
+          message: `Each product must include an id. Product at index ${i} is missing id.`
         });
       }
     }
@@ -300,7 +314,7 @@ router.post("/create-momo-payment", async (req, res) => {
       const quantity = Number(product.quantity) || 1;
       return sum + price * quantity;
     }, 0);
-    
+
     const totalAmountVND = Math.round(totalAmountUSD * 25000);
 
     // Generate unique order ID
@@ -356,7 +370,7 @@ router.post("/create-momo-payment", async (req, res) => {
     }
   } catch (error) {
     console.error("Error creating MoMo payment:", error);
-    
+
     // Try to update order status if it was created
     try {
       if (order && order._id) {
@@ -367,9 +381,9 @@ router.post("/create-momo-payment", async (req, res) => {
       console.error("Error updating order status:", saveError);
     }
 
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Failed to create payment. Vui lòng thử lại hoặc sử dụng thanh toán đơn giản.",
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -415,7 +429,7 @@ router.post("/momo-callback", async (req, res) => {
     });
   } catch (error) {
     console.error("Error processing MoMo callback:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       resultCode: -1,
       message: 'Internal server error',
     });

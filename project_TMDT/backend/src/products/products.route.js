@@ -1,6 +1,7 @@
 const express = require("express");
 const Products = require("./products.model");
 const Reviews = require("../reviews/reviews.model");
+const mongoose = require("mongoose");
 const router = express.Router();
 
 // post a product
@@ -79,6 +80,9 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const productId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(404).send({ message: "Product not found" });
+    }
     // console.log(postId)
 
     const product = await Products.findById(productId).populate(
@@ -107,6 +111,9 @@ router.get("/:id", async (req, res) => {
 router.patch("/update-product/:id", async (req, res) => {
   try {
     const productId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(404).send({ message: "Product not found" });
+    }
     // const { title, content, category } = req.body;
     const updatedProduct = await Products.findByIdAndUpdate(
       productId,
@@ -134,6 +141,9 @@ router.patch("/update-product/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const productId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(404).send({ message: "Post not found" });
+    }
 
     // Find and delete the products collection
     const deletedProduct = await Products.findByIdAndDelete(productId);
@@ -164,6 +174,10 @@ router.get("/related/:id", async (req, res) => {
     // Check if id is defined
     if (!id) {
       return res.status(400).send({ message: "Product ID is required" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).send({ message: "Product not found" });
     }
 
     // Find the product by ID

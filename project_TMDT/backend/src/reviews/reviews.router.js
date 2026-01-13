@@ -1,6 +1,7 @@
 const express = require("express");
 const Reviews = require("./reviews.model");
 const Products = require("../products/products.model");
+const mongoose = require("mongoose");
 const router = express.Router();
 
 // post a new review or update a existing review
@@ -73,6 +74,10 @@ router.get("/:userId", async (req, res) => {
 
   if (!userId) {
     return res.status(400).json({ message: "User id is required" });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(404).json({ message: "No reviews found for this user" });
   }
 
   try {
