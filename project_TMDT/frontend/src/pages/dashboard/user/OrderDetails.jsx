@@ -99,6 +99,43 @@ const OrderDetails = () => {
             )}
             <p className="mb-8">Trạng thái: {order.status === 'confirmed' ? 'Đã xác nhận' : order.status}</p>
 
+            {/* Product List */}
+            <div className="mb-8 border-t pt-4">
+                <h3 className="text-xl font-semibold mb-3">Sản phẩm đã mua</h3>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ảnh</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản phẩm</th>
+                                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
+                                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Đơn giá</th>
+                                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {order.products?.map((item, index) => (
+                                <tr key={index}>
+                                    <td className="px-4 py-2 text-sm text-gray-900">
+                                        <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
+                                    </td>
+                                    <td className="px-4 py-2 text-sm text-gray-900">{item.name || 'Sản phẩm không tên'}</td>
+                                    <td className="px-4 py-2 text-sm text-center text-gray-900">{item.quantity}</td>
+                                    <td className="px-4 py-2 text-sm text-right text-gray-900">${(item.price || 0).toFixed(2)}</td>
+                                    <td className="px-4 py-2 text-sm text-right text-gray-900 font-medium">${((item.price || 0) * item.quantity).toFixed(2)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                        <tfoot className="bg-gray-50 font-semibold">
+                            <tr>
+                                <td colSpan="3" className="px-4 py-2 text-sm text-right text-gray-900">Tổng cộng (sau thuế):</td>
+                                <td className="px-4 py-2 text-sm text-right text-green-600">${(order.amount || 0).toFixed(2)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
             {/* Timeline */}
             <ol className="items-center sm:flex relative">
                 {steps.map((step, index) => (

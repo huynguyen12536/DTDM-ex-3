@@ -54,6 +54,9 @@ router.post("/confirm-payment", async (req, res) => {
     if (!order) {
       const lineItems = session.line_items.data.map((item) => ({
         productId: item.price.product,
+        name: item.description,
+        image: item.price.product_data?.images?.[0], // Try to get image from stripe
+        price: item.amount_total / 100 / item.quantity,
         quantity: item.quantity,
       }));
 
@@ -226,9 +229,11 @@ router.post("/cod-checkout", async (req, res) => {
       }
     }
 
-    // Normalize products - ensure each has productId
     const normalizedProducts = products.map((product) => ({
       productId: product._id || product.id,
+      name: product.name,
+      image: product.image,
+      price: Number(product.price) || 0,
       quantity: Number(product.quantity) || 1,
     }));
 
@@ -302,9 +307,11 @@ router.post("/create-momo-payment", async (req, res) => {
       }
     }
 
-    // Normalize products
     const normalizedProducts = products.map((product) => ({
       productId: product._id || product.id,
+      name: product.name,
+      image: product.image,
+      price: Number(product.price) || 0,
       quantity: Number(product.quantity) || 1,
     }));
 
@@ -341,6 +348,8 @@ router.post("/create-momo-payment", async (req, res) => {
     const returnUrl = `${baseUrl}/success?orderId=${order._id}&paymentMethod=momo`;
     const notifyUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/orders/momo-callback`;
 
+    console.log(`[MoMo] Creating payment for order: ${orderId}, Amount: ${totalAmountVND} VND`);
+
     // Create MoMo payment
     const momoResult = await momoPayment.createMoMoPayment({
       orderId: orderId,
@@ -352,6 +361,11 @@ router.post("/create-momo-payment", async (req, res) => {
     });
 
     if (momoResult && momoResult.success) {
+      console.log("\n------------------------------------------------");
+      console.log("PAYMENT URL (MoMo):", momoResult.payUrl);
+      console.log("------------------------------------------------\n");
+      
+      console.log(`[MoMo] Payment link created successfully. URL: ${momoResult.payUrl}`);
       res.status(200).json({
         message: "Payment link created successfully",
         payUrl: momoResult.payUrl,
@@ -392,12 +406,14 @@ router.post("/create-momo-payment", async (req, res) => {
 router.post("/momo-callback", async (req, res) => {
   try {
     const callbackData = req.body;
+    console.log(`[MoMo] Received callback for order: ${callbackData.orderId}, resultCode: ${callbackData.resultCode}`);
 
     // Verify signature
     const isValid = momoPayment.verifyMoMoCallback(callbackData);
+    console.log(`[MoMo] Signature verification result: ${isValid}`);
 
     if (!isValid) {
-      console.error('Invalid MoMo callback signature');
+      console.error('[MoMo] Invalid callback signature');
       return res.status(400).json({ message: 'Invalid signature' });
     }
 
@@ -409,20 +425,21 @@ router.post("/momo-callback", async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Update order status based on resultCode
     // resultCode = 0: Success
     // resultCode != 0: Failed
     if (callbackData.resultCode === 0) {
-      order.status = 'pending'; // Will be processed
+      console.log(`[MoMo] Payment successful for order: ${callbackData.orderId}. Updating status to 'confirmed'.`);
+      order.status = 'confirmed'; // Equivalent to PAID in this system
       order.paymentId = callbackData.transId;
       order.paymentTime = new Date(callbackData.responseTime);
     } else {
+      console.log(`[MoMo] Payment failed for order: ${callbackData.orderId}, message: ${callbackData.message}`);
       order.status = 'failed';
     }
 
     await order.save();
 
-    // Return success to MoMo
+    // Return success to MoMo (always 200/resultCode: 0 for MoMo to stop retrying)
     res.status(200).json({
       resultCode: 0,
       message: 'Success',
@@ -435,5 +452,44 @@ router.post("/momo-callback", async (req, res) => {
     });
   }
 });
+
+// Force sync MoMo payment status (Frontend can call this if status is still pending)
+router.get("/confirm-momo/:orderId", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    console.log(`[MoMo] Manually confirming status for order: ${orderId}`);
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (order.status === 'confirmed') {
+      return res.status(200).json({ status: 'confirmed', message: 'Order already confirmed' });
+    }
+
+    // Call MoMo Query API
+    const momoStatus = await momoPayment.queryMoMoTransaction(order.orderId);
+    console.log(`[MoMo] Query API result for ${order.orderId}:`, momoStatus.resultCode, momoStatus.message);
+
+    // resultCode = 0: Success
+    if (momoStatus.resultCode === 0) {
+      order.status = 'confirmed';
+      order.paymentId = momoStatus.transId || order.paymentId;
+      await order.save();
+      return res.status(200).json({ status: 'confirmed', message: 'Thanh toán đã được xác nhận thành công' });
+    }
+
+    res.status(200).json({ 
+      status: order.status, 
+      message: momoStatus.message || 'Thanh toán chưa hoàn tất hoặc thất bại',
+      momoResult: momoStatus.resultCode
+    });
+  } catch (error) {
+    console.error("Error confirming MoMo payment:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 module.exports = router;

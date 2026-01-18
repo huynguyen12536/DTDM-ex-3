@@ -24,10 +24,10 @@ const Register = () => {
     console.log(data);
     try {
       await registerUser(data).unwrap();
-      alert("Đăng ký thành công");
-      navigate('/login');
+      setMessage("Đăng ký thành công! Bạn đang được chuyển hướng...");
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      alert("Đăng ký thất bại");
+      setMessage("Đăng ký thất bại. Vui lòng thử lại.");
     }
   };
 

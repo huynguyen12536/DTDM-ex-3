@@ -28,7 +28,7 @@ const Login = () => {
       // console.log(response)
       const { token, user } = response;
       dispatch(setUser({ user }));
-      alert('Đăng nhập thành công');
+      // alert('Đăng nhập thành công');
       navigate('/');
 
     } catch (err) {

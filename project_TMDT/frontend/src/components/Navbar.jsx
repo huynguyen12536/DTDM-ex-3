@@ -25,7 +25,8 @@ const Navbar = () => {
     try {
       await logoutUser().unwrap();
       dispatch(logout());
-      navigate("/")
+      setIsDropdownOpen(false);
+      navigate("/login")
     } catch (err) {
       console.error("Failed to logout:", err);
     }

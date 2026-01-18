@@ -10,6 +10,7 @@ const MOMO_PARTNER_CODE = process.env.MOMO_PARTNER_CODE || 'MOMO';
 const MOMO_ACCESS_KEY = process.env.MOMO_ACCESS_KEY || 'F8BBA842ECF85';
 const MOMO_SECRET_KEY = process.env.MOMO_SECRET_KEY || 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
 const MOMO_API_ENDPOINT = process.env.MOMO_API_ENDPOINT || 'https://test-payment.momo.vn/v2/gateway/api/create';
+const MOMO_QUERY_ENDPOINT = 'https://test-payment.momo.vn/v2/gateway/api/query';
 
 /**
  * Tạo chữ ký (signature) cho MoMo API
@@ -43,7 +44,7 @@ async function createMoMoPayment(paymentData) {
 
   // Tạo request ID
   const requestId = `${orderId}_${Date.now()}`;
-  const requestType = 'captureWallet';
+  const requestType = 'payWithMethod';
 
   // Tạo raw signature
   const rawSignature = `accessKey=${MOMO_ACCESS_KEY}&amount=${amount}&extraData=${extraData}&ipnUrl=${notifyUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${MOMO_PARTNER_CODE}&redirectUrl=${returnUrl}&requestId=${requestId}&requestType=${requestType}`;
@@ -177,8 +178,67 @@ function verifyMoMoCallback(callbackData) {
   return calculatedSignature === signature;
 }
 
+/**
+ * Truy vấn trạng thái giao dịch từ MoMo
+ * @param {string} orderId - Mã đơn hàng cần kiểm tra
+ * @returns {Promise<Object>} Trạng thái giao dịch từ MoMo
+ */
+async function queryMoMoTransaction(orderId) {
+  const requestId = `${orderId}_query_${Date.now()}`;
+  
+  const rawSignature = `accessKey=${MOMO_ACCESS_KEY}&orderId=${orderId}&partnerCode=${MOMO_PARTNER_CODE}&requestId=${requestId}`;
+  const signature = createSignature(rawSignature);
+
+  const requestBody = {
+    partnerCode: MOMO_PARTNER_CODE,
+    requestId: requestId,
+    orderId: orderId,
+    signature: signature,
+    lang: 'vi'
+  };
+
+  try {
+    const https = require('https');
+    const url = require('url');
+    const parsedUrl = url.parse(MOMO_QUERY_ENDPOINT);
+    const postData = JSON.stringify(requestBody);
+
+    const options = {
+      hostname: parsedUrl.hostname,
+      port: 443,
+      path: parsedUrl.path,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData),
+      },
+    };
+
+    return new Promise((resolve) => {
+      const req = https.request(options, (res) => {
+        let data = '';
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => {
+          try {
+            const jsonData = JSON.parse(data);
+            resolve(jsonData);
+          } catch (e) {
+            resolve({ resultCode: -1, message: 'Lỗi parse response' });
+          }
+        });
+      });
+      req.on('error', (e) => resolve({ resultCode: -1, message: e.message }));
+      req.write(postData);
+      req.end();
+    });
+  } catch (error) {
+    return { resultCode: -1, message: error.message };
+  }
+}
+
 module.exports = {
   createMoMoPayment,
   verifyMoMoCallback,
+  queryMoMoTransaction,
 };
 

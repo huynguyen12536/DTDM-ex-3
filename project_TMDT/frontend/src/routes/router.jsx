@@ -26,6 +26,7 @@ import ManageProducts from '../pages/dashboard/admin/manageProduct/ManageProduct
 import UpdateProduct from '../pages/dashboard/admin/manageProduct/UpdateProduct';
 import ManageUser from '../pages/dashboard/admin/users/ManageUser';
 import ManageOrders from '../pages/dashboard/admin/manageOrders/ManageOrders';
+import Contact from '../pages/contact/Contact';
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,7 @@ const router = createBrowserRouter([
       { path: 'shop/:id', element: <SingleProduct /> },
       { path: 'success', element: <PaymentSuccess /> },
       { path: 'cart', element: <CartPage /> },
+      { path: 'contact', element: <Contact /> },
       { path: 'orders/:orderId', element: <OrderDetails /> },
       { path: '*', element: <ErrorPage /> },
     ],
