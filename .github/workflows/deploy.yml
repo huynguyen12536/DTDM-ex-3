@@ -25,14 +25,14 @@ jobs:
       - name: Build and push Backend
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
+          context: ./project_TMDT/backend
           push: true
           tags: ghcr.io/huynguyen12536/dtdm-ex-3/backend:latest
 
       - name: Build and push Frontend
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
+          context: ./project_TMDT/frontend
           push: true
           tags: ghcr.io/huynguyen12536/dtdm-ex-3/frontend:latest
 
