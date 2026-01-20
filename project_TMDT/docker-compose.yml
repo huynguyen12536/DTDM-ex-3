@@ -1,6 +1,6 @@
 services:
   backend:
-    build: 
+    build:
       context: ./backend
     restart: always
     environment:
@@ -38,3 +38,5 @@ services:
 
 volumes:
   mongodb_data:
+
+
