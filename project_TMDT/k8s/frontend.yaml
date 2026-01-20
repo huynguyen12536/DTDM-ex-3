@@ -29,6 +29,6 @@ spec:
         - name: ghcr-login-secret
       containers:
         - name: frontend
-          image: ghcr.io/huynguyen12536/frontend:latest
+          image: ghcr.io/huynguyen12536/dtdm-ex-3/frontend:latest
           ports:
             - containerPort: 80

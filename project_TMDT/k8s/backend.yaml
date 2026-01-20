@@ -29,7 +29,7 @@ spec:
         - name: ghcr-login-secret
       containers:
         - name: backend
-          image: ghcr.io/huynguyen12536/backend:latest
+          image: ghcr.io/huynguyen12536/dtdm-ex-3/backend:latest
           ports:
             - containerPort: 5000
           envFrom:
