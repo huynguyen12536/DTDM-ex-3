@@ -1,0 +1,7 @@
+# Created by antigravity to secure secrets
+.env
+node_modules
+dist
+.DS_Store
+*.log
+docker-compose.override.yml

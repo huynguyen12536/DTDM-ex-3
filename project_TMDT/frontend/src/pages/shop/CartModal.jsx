@@ -51,7 +51,7 @@ const CartModal = ({ isOpen, onClose, products }) => {
                     <img src={item.image} alt={item.name} className="size-12 object-cover mr-4" />
                     <div>
                       <h5 className="text-lg font-medium">{item.name}</h5>
-                      <p className="text-gray-600 text-sm">${Number(item.price).toFixed(2)}</p>
+                      <p className="text-gray-600 text-sm">{Number(item.price).toLocaleString('vi-VN')}đ</p>
                     </div>
                   </div>
 

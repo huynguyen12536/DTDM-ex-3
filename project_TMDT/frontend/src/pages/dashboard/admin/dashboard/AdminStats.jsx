@@ -7,7 +7,7 @@ const AdminStats = ({stats}) => {
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
         <div className="bg-white shadow-md rounded-lg p-6 border border-gray-200">
           <h2 className="text-xl font-semibold mb-2">Total Earning</h2>
-          <p className="text-2xl font-bold">${Math.round(stats.totalEarnings)}</p>
+          <p className="text-2xl font-bold">{Math.round(stats.totalEarnings).toLocaleString('vi-VN')}đ</p>
         </div>
         <div className="bg-white shadow-md rounded-lg p-6 border border-gray-200">
           <h2 className="text-xl font-semibold mb-2">All Orders</h2>

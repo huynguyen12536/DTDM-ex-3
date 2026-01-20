@@ -58,7 +58,7 @@ const SingleProduct = () => {
                     <div className="w-full md:w-1/2">
                         <h3 className="text-2xl font-semibold mb-4">{singleProduct.name}</h3>
                         <p className="text-xl text-primary mb-4">
-                            ${singleProduct.price} {singleProduct.oldPrice && <s>${singleProduct.oldPrice}</s>}
+                            {singleProduct.price?.toLocaleString('vi-VN')}đ {singleProduct.oldPrice && <s>{singleProduct.oldPrice.toLocaleString('vi-VN')}đ</s>}
                         </p>
                         <p className="text-gray-700 mb-4">{singleProduct.description}</p>
 

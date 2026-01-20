@@ -71,7 +71,7 @@ const UserOrders = () => {
                                             </span>
                                         </td>
                                         <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                            ${order.amount.toFixed(2)}
+                                            {order.amount.toLocaleString('vi-VN')}đ
                                         </td>
                                         <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap hover:text-primary p-4 text-center">
                                             <Link to={`/orders/${order._id}`}>Xem đơn hàng</Link>

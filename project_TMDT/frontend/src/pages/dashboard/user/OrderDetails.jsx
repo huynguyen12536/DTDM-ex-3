@@ -93,7 +93,7 @@ const OrderDetails = () => {
                     <p className="text-blue-800 font-semibold mb-2">💰 Thanh toán khi nhận hàng (COD)</p>
                     <p className="text-blue-700 text-sm">
                         Bạn sẽ thanh toán cho nhân viên giao hàng khi nhận được sản phẩm.
-                        Số tiền cần thanh toán: <strong>${order.amount?.toFixed(2) || '0.00'}</strong>
+                        Số tiền cần thanh toán: <strong>{order.amount?.toLocaleString('vi-VN') || '0'}đ</strong>
                     </p>
                 </div>
             )}
@@ -121,15 +121,15 @@ const OrderDetails = () => {
                                     </td>
                                     <td className="px-4 py-2 text-sm text-gray-900">{item.name || 'Sản phẩm không tên'}</td>
                                     <td className="px-4 py-2 text-sm text-center text-gray-900">{item.quantity}</td>
-                                    <td className="px-4 py-2 text-sm text-right text-gray-900">${(item.price || 0).toFixed(2)}</td>
-                                    <td className="px-4 py-2 text-sm text-right text-gray-900 font-medium">${((item.price || 0) * item.quantity).toFixed(2)}</td>
+                                    <td className="px-4 py-2 text-sm text-right text-gray-900">{(item.price || 0).toLocaleString('vi-VN')}đ</td>
+                                    <td className="px-4 py-2 text-sm text-right text-gray-900 font-medium">{((item.price || 0) * item.quantity).toLocaleString('vi-VN')}đ</td>
                                 </tr>
                             ))}
                         </tbody>
                         <tfoot className="bg-gray-50 font-semibold">
                             <tr>
                                 <td colSpan="3" className="px-4 py-2 text-sm text-right text-gray-900">Tổng cộng (sau thuế):</td>
-                                <td className="px-4 py-2 text-sm text-right text-green-600">${(order.amount || 0).toFixed(2)}</td>
+                                <td className="px-4 py-2 text-sm text-right text-green-600">{(order.amount || 0).toLocaleString('vi-VN')}đ</td>
                             </tr>
                         </tfoot>
                     </table>

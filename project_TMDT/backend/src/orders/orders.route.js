@@ -11,12 +11,12 @@ router.post("/create-checkout-session", async (req, res) => {
   try {
     const lineItems = products.map((product) => ({
       price_data: {
-        currency: "usd",
+        currency: "vnd",
         product_data: {
           name: product.name,
           images: [product.image],
         },
-        unit_amount: Math.round(product.price * 100),
+        unit_amount: Math.round(product.price),
       },
       quantity: product.quantity,
     }));
@@ -315,14 +315,12 @@ router.post("/create-momo-payment", async (req, res) => {
       quantity: Number(product.quantity) || 1,
     }));
 
-    // Calculate total amount (convert USD to VND, 1 USD = 25000 VND)
-    const totalAmountUSD = products.reduce((sum, product) => {
+    // Calculate total amount in VND
+    const totalAmountVND = products.reduce((sum, product) => {
       const price = Number(product.price) || 0;
       const quantity = Number(product.quantity) || 1;
       return sum + price * quantity;
     }, 0);
-
-    const totalAmountVND = Math.round(totalAmountUSD * 25000);
 
     // Generate unique order ID
     const orderId = `MOMO_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -331,7 +329,7 @@ router.post("/create-momo-payment", async (req, res) => {
     const order = new Order({
       orderId: orderId,
       products: normalizedProducts,
-      amount: totalAmountUSD,
+      amount: totalAmountVND,
       email: email,
       status: "pending",
       paymentMethod: "momo",

@@ -29,7 +29,7 @@ const CartDetails = ({ product }) => {
         />
         <div>
           <h5 className="text-lg font-medium">{product.name}</h5>
-          <p className="text-gray-600 text-sm">${Number(product.price).toFixed(2)}</p>
+          <p className="text-gray-600 text-sm">{Number(product.price).toLocaleString('vi-VN')}đ</p>
           <p className="text-gray-500 text-xs capitalize">Color: {product.color}</p>
         </div>
       </div>

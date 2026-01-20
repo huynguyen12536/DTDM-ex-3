@@ -125,13 +125,13 @@ const OrderSummary = () => {
           Số lượng sản phẩm : {selectedItems}
         </p>
         <p className="text-dark mt-2">
-          Tổng tiền : ${totalPrice.toFixed(2)}
+          Tổng tiền : {totalPrice.toLocaleString('vi-VN')}đ
         </p>
         <p className="text-dark mt-2">
-          Thuế ({taxRate * 100}%): ${tax.toFixed(2)}
+          Thuế ({taxRate * 100}%): {tax.toLocaleString('vi-VN')}đ
         </p>
         <h3 className="font-semibold text-dark mt-4">
-          Tổng cộng ${grandTotal.toFixed(2)}
+          Tổng cộng {grandTotal.toLocaleString('vi-VN')}đ
         </h3>
       </div>
       <div className="px-4 pb-6">
