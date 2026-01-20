@@ -343,10 +343,14 @@ router.post("/create-momo-payment", async (req, res) => {
     const orderInfo = `Thanh toan don hang ${orderId}: ${productNames}`;
 
     // MoMo payment URLs
-    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const baseUrl = process.env.FRONTEND_URL || 'http://3.27.225.13';
+    const backendUrl = process.env.BACKEND_URL || 'http://3.27.225.13';
     const returnUrl = `${baseUrl}/success?orderId=${order._id}&paymentMethod=momo`;
-    const notifyUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/orders/momo-callback`;
+    const notifyUrl = `${backendUrl}/api/orders/momo-callback`;
 
+    console.log(`[MoMo] FRONTEND_URL from env: ${process.env.FRONTEND_URL}`);
+    console.log(`[MoMo] Using baseUrl: ${baseUrl}`);
+    console.log(`[MoMo] Return URL: ${returnUrl}`);
     console.log(`[MoMo] Creating payment for order: ${orderId}, Amount: ${totalAmountVND} VND`);
 
     // Create MoMo payment
