@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost', 'http://localhost:80'],
+  origin: ['http://localhost:5173', 'http://localhost', 'http://localhost:80', 'http://3.27.225.13'],
   credentials: true,
 }));
 
