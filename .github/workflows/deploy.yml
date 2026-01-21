@@ -1,4 +1,4 @@
-name: Build and Deploy to K8s and AWS
+name: Build and Deploy to AWS (Docker & S3)
 
 on:
   push:
@@ -48,6 +48,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd project/project_TMDT
+            git reset --hard origin/main
             git pull origin main
             sudo docker compose pull
             sudo docker compose up --build -d
