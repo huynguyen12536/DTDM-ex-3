@@ -1,4 +1,4 @@
-name: Build and Deploy to K8s
+name: Build and Deploy to K8s and AWS
 
 on:
   push:
@@ -54,13 +54,47 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Server 2 via SSH (Docker)
+      - name: Deploy to Server via SSH (Docker)
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SERVER_2_IP }}
+          host: 54.169.66.118
           username: ubuntu
-          key: ${{ secrets.SSH_PRIVATE_KEY_2 }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd project/project_TMDT
             sudo docker compose pull
-            sudo docker compose up -d
+            sudo docker compose up --build -d
+            sudo docker image prune -f
+
+  deploy-s3:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd project_TMDT/frontend
+          npm install
+
+      - name: Build Frontend
+        run: |
+          cd project_TMDT/frontend
+          npm run build
+
+      - name: Deploy to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ap-southeast-1'
+          SOURCE_DIR: 'project_TMDT/frontend/dist'
