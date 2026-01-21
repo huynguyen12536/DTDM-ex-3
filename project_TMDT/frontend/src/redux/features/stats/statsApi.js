@@ -5,19 +5,19 @@ import { getBaseUrl } from '../../../utils/baseURL';
 export const statsApi = createApi({
   reducerPath: 'statsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${getBaseUrl()}/api/stats`,
+    baseUrl: `${getBaseUrl()}/api/stats/`,
     credentials: 'include',
   }),
-  tagTypes: ['Stats'], 
+  tagTypes: ['Stats'],
   endpoints: (builder) => ({
-  
+
     getUserStats: builder.query({
       query: (email) => `user-stats/${email}`,
       providesTags: ['Stats'],
     }),
-  
+
     getAdminStats: builder.query({
-      query: () => '/admin-stats',
+      query: () => 'admin-stats',
       providesTags: ['Stats'],
     }),
   }),

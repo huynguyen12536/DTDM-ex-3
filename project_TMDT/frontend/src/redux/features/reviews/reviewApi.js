@@ -4,14 +4,14 @@ import { getBaseUrl } from '../../../utils/baseURL';
 export const reviewApi = createApi({
   reducerPath: 'reviewApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${getBaseUrl()}/api/reviews`,
+    baseUrl: `${getBaseUrl()}/api/reviews/`,
     credentials: 'include',
   }),
-  tagTypes: ['Reviews'], 
+  tagTypes: ['Reviews'],
   endpoints: (builder) => ({
     postReview: builder.mutation({
       query: (reviewData) => ({
-        url: '/post-review',
+        url: 'post-review',
         method: 'POST',
         body: reviewData,
       }),
@@ -19,12 +19,12 @@ export const reviewApi = createApi({
     }),
     getReviewsCount: builder.query({
       query: () => ({
-        url: '/total-reviews',
+        url: 'total-reviews',
       }),
     }),
     getReviewsByUserId: builder.query({
       query: (userid) => ({
-        url: `/${userid}`, 
+        url: `${userid}`,
       }),
       providesTags: (result) =>
         result ? [{ type: 'Reviews', id: result[0]?.email }] : [],

@@ -5,7 +5,7 @@ import { getBaseUrl } from '../../../utils/baseURL';
 export const orderApi = createApi({
   reducerPath: 'orderApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${getBaseUrl()}/api/orders`,
+    baseUrl: `${getBaseUrl()}/api/orders/`,
     credentials: 'include',
   }),
   tagTypes: ["Order"],
@@ -13,7 +13,7 @@ export const orderApi = createApi({
     // Fetch orders by email
     getOrdersByEmail: builder.query({
       query: (email) => ({
-        url: `/${email}`,
+        url: `${email}`,
         method: 'GET',
       }),
       providesTags: ['Order'],
@@ -37,7 +37,7 @@ export const orderApi = createApi({
 
     updateOrderStatus: builder.mutation({
       query: ({ id, status }) => ({
-        url: `/update-order-status/${id}`,
+        url: `update-order-status/${id}`,
         method: 'PATCH',
         body: { status },
       }),
@@ -45,7 +45,7 @@ export const orderApi = createApi({
     }),
     deleteOrder: builder.mutation({
       query: (id) => ({
-        url: `/delete-order/${id}`,
+        url: `delete-order/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Order'],
