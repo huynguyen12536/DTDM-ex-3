@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend
-  namespace: pickelball-app
+  namespace: lebaba-ecommerce
 spec:
   ports:
     - port: 5000
@@ -14,7 +14,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  namespace: pickelball-app
+  namespace: lebaba-ecommerce
 spec:
   replicas: 1
   selector:

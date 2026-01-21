@@ -48,3 +48,16 @@ docker-compose up -d --build frontend
 
 # Sau đó chạy lại script
 docker exec project_tmdt-backend-1 node scripts/seedProducts.js
+
+
+xoa container:
+docker stop $(docker ps -aq)
+docker rm $(docker ps -aq)
+
+
+docker rmi -f $(docker images -aq)
+docker system prune -a -f --volumes
+docker ps -a
+docker images
+docker-compose build --no-cache
+docker-compose up -d
