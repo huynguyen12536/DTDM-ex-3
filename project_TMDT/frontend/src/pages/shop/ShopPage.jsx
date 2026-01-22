@@ -20,7 +20,7 @@ const ShopPage = () => {
         color: 'all',
         priceRange: ''
     });
-    
+
     const [currentPage, setCurrentPage] = useState(1);
     const [productsPerPage] = useState(8);
 
@@ -61,7 +61,7 @@ const ShopPage = () => {
     return (
         <>
             <section className="section__container rounded bg-primary-light">
-                <h2 className="section__header">Shop Page</h2>
+                <h2 className="section__header">Shop Page (Version 2.0)</h2>
                 <p className="section__subheader">
                     Discover the Hottest Picks: Elevate Your Style with Our Curated
                     Collection of Trending Women's Fashion Products.
@@ -81,7 +81,7 @@ const ShopPage = () => {
                     <div>
                         <h3 className='text-xl font-medium mb-4'>Showing {startProduct} to {endProduct} of {totalProducts} products</h3>
                         <ProductCards products={products} />
-                        
+
                         {/* Pagination controls */}
                         <div className="mt-6 flex justify-center">
                             <button

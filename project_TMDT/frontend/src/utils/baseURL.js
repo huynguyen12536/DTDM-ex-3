@@ -1,5 +1,6 @@
 
 export const getBaseUrl = () => {
+  console.log("Current Mode (PROD):", import.meta.env.PROD);
   if (import.meta.env.PROD) {
     return "";
   }
