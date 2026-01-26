@@ -3,6 +3,7 @@ const Order = require("./orders.model");
 const mongoose = require("mongoose");
 const router = express.Router();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const verifyToken = require("../middleware/verifyToken");
 
 // Create Checkout Session
 router.post("/create-checkout-session", async (req, res) => {
@@ -87,16 +88,45 @@ router.post("/confirm-payment", async (req, res) => {
   }
 });
 
-router.get("/:email", async (req, res) => {
-  const email = req.params.email;
+// ✅ SECURE: Get orders for logged-in user (email from token, not URL)
+router.get("/me", verifyToken, async (req, res) => {
+  const email = req.email; // Email from verified JWT token
 
   if (!email) {
-    return res.status(400).json({ message: "Email parameter is required" });
+    return res.status(400).json({ message: "User email not found in token" });
   }
-
 
   try {
     const orders = await Order.find({ email: email }).sort({ createdAt: -1 });
+    if (orders.length === 0 || !orders) {
+      return res
+        .status(404)
+        .json({ order: 0, message: "No orders found for this user" });
+    }
+    res.json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ✅ ADMIN ONLY: Get orders by specific email (with role check)
+router.get("/user/:email", verifyToken, async (req, res) => {
+  const targetEmail = req.params.email;
+  const requestorEmail = req.email;
+  const requestorRole = req.role;
+
+  // If not admin and trying to view someone else's orders, deny access
+  if (requestorRole !== 'admin' && targetEmail !== requestorEmail) {
+    return res.status(403).json({ message: "Forbidden: You can only view your own orders" });
+  }
+
+  if (!targetEmail) {
+    return res.status(400).json({ message: "Email parameter is required" });
+  }
+
+  try {
+    const orders = await Order.find({ email: targetEmail }).sort({ createdAt: -1 });
     if (orders.length === 0 || !orders) {
       return res
         .status(404)
@@ -108,6 +138,7 @@ router.get("/:email", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 router.get("/order/:id", async (req, res) => {
   // console.log(req.params.id);

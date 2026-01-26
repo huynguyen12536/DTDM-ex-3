@@ -1,11 +1,10 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { useGetOrdersByEmailQuery } from '../../../redux/features/orders/orderApi';
+import { useGetMyOrdersQuery } from '../../../redux/features/orders/orderApi';
 import { Link } from 'react-router-dom';
 
 const UserOrders = () => {
-    const { user } = useSelector((state) => state.auth);
-    const { data: orders, error, isLoading } = useGetOrdersByEmailQuery(user?.email);
+    // ✅ SECURE: Email is now taken from JWT token, not from client state
+    const { data: orders, error, isLoading } = useGetMyOrdersQuery();
 
     if (isLoading) return <div>Đang tải...</div>;
     if (error) return <div>Không tìm thấy đơn hàng!</div>;

@@ -10,10 +10,18 @@ export const orderApi = createApi({
   }),
   tagTypes: ["Order"],
   endpoints: (builder) => ({
-    // Fetch orders by email
+    // ✅ SECURE: Fetch orders for current logged-in user (email from token)
+    getMyOrders: builder.query({
+      query: () => ({
+        url: `/me`,
+        method: 'GET',
+      }),
+      providesTags: ['Order'],
+    }),
+    // ✅ ADMIN: Fetch orders by specific email (requires admin role)
     getOrdersByEmail: builder.query({
       query: (email) => ({
-        url: `/${email}`,
+        url: `/user/${email}`,
         method: 'GET',
       }),
       providesTags: ['Order'],
@@ -54,6 +62,7 @@ export const orderApi = createApi({
 });
 
 export const {
+  useGetMyOrdersQuery,
   useGetOrdersByEmailQuery,
   useGetOrderByIdQuery,
   useGetAllOrdersQuery,
