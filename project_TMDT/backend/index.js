@@ -142,6 +142,3 @@ app.post("/api/uploadImage", (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
-app.listen(3000, '0.0.0.0', () => {
-  console.log('Server running on port 3000');
-});

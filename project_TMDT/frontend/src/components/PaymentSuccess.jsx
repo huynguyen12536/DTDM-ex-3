@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import TimelineStep from '../pages/dashboard/user/TimelineStep';
+import { getBaseUrl } from '../utils/baseURL';
 
 const PaymentSuccess = () => {
   const [order, setOrder] = useState(null);
@@ -13,7 +14,7 @@ const PaymentSuccess = () => {
     console.log('PaymentSuccess - sessionId:', sessionId, 'orderId:', orderId);
 
     if (sessionId) {
-      fetch(`${import.meta.env.VITE_API_URL}/api/orders/confirm-payment`, {
+      fetch(`${getBaseUrl()}/api/orders/confirm-payment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,8 +40,8 @@ const PaymentSuccess = () => {
           alert('Không thể xác nhận thanh toán. Vui lòng thử lại.');
         });
     } else if (orderId) {
-      console.log('Fetching order from:', `${import.meta.env.VITE_API_URL}/api/orders/order/${orderId}`);
-      fetch(`${import.meta.env.VITE_API_URL}/api/orders/order/${orderId}`, { credentials: 'include' })
+      console.log('Fetching order from:', `${getBaseUrl()}/api/orders/order/${orderId}`);
+      fetch(`${getBaseUrl()}/api/orders/order/${orderId}`, { credentials: 'include' })
         .then((res) => {
           console.log('Response status:', res.status);
           if (!res.ok) {
@@ -52,16 +53,16 @@ const PaymentSuccess = () => {
           console.log('Order data received:', data);
           if (data && data._id) {
             setOrder(data);
-            
+
             // If MoMo and pending, try to force sync once
             if (data.paymentMethod === 'momo' && data.status === 'pending') {
               console.log('Order is pending MoMo, attempting to sync...');
               const query = new URLSearchParams(window.location.search);
               const resultCode = query.get('resultCode');
-              
+
               // If URL says success (resultCode=0), force sync
               if (resultCode === '0') {
-                fetch(`${import.meta.env.VITE_API_URL}/api/orders/confirm-momo/${data._id}`, { credentials: 'include' })
+                fetch(`${getBaseUrl()}/api/orders/confirm-momo/${data._id}`, { credentials: 'include' })
                   .then(res => res.json())
                   .then(syncData => {
                     if (syncData.status === 'confirmed') {
@@ -93,7 +94,7 @@ const PaymentSuccess = () => {
 
   // Determine steps based on payment method
   const isCOD = order.paymentMethod === 'cod';
-  
+
   const codSteps = [
     {
       status: 'confirmed',
@@ -166,11 +167,11 @@ const PaymentSuccess = () => {
   return (
     <div className="section__container rounded p-6">
       <h2 className="text-2xl font-semibold mb-4">
-        {order.paymentMethod === 'momo' 
-          ? 'Thanh toán MoMo thành công' 
+        {order.paymentMethod === 'momo'
+          ? 'Thanh toán MoMo thành công'
           : order.paymentMethod === 'cod'
-          ? 'Đơn hàng COD đã được xác nhận'
-          : 'Thanh toán thành công'}
+            ? 'Đơn hàng COD đã được xác nhận'
+            : 'Thanh toán thành công'}
       </h2>
       <p className="mb-4">Mã đơn hàng: {order.orderId || order._id}</p>
       {order.paymentMethod === 'momo' && order.paymentId && (
@@ -186,7 +187,7 @@ const PaymentSuccess = () => {
         </div>
       )}
       <p className="mb-8">Trạng thái: {order.status === 'confirmed' ? 'Đã xác nhận' : order.status}</p>
-      
+
       {/* Product List */}
       <div className="mb-8 border-t pt-4">
         <h3 className="text-xl font-semibold mb-3">Chi tiết sản phẩm</h3>
