@@ -61,7 +61,7 @@ const ShopPage = () => {
     return (
         <>
             <section className="section__container rounded bg-primary-light">
-                <h2 className="section__header">Shop Page (Version 2.0)</h2>
+                <h2 className="section__header">Shop Page (Version 2.1)</h2>
                 <p className="section__subheader">
                     Discover the Hottest Picks: Elevate Your Style with Our Curated
                     Collection of Trending Women's Fashion Products.
