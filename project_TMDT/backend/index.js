@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: true,
+  oorigin: process.env.FRONTEND_URL,
   credentials: true,
 }));
 

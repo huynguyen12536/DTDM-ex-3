@@ -3,7 +3,6 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { clearCart } from "../../redux/features/cart/cartSlice";
-import { getBaseUrl } from "../../utils/baseURL";
 
 const OrderSummary = () => {
   const dispatch = useDispatch();
@@ -23,7 +22,7 @@ const OrderSummary = () => {
       return;
     }
 
-    if (!products.length) {
+    if (!products || !products.length) {
       alert("Giỏ hàng của bạn đang trống.");
       return;
     }
@@ -44,7 +43,7 @@ const OrderSummary = () => {
       if (paymentMethod === 'momo') {
         // MoMo Payment
         const response = await fetch(
-          `${getBaseUrl()}/api/orders/create-momo-payment`,
+          `${import.meta.env.VITE_API_URL}/api/orders/create-momo-payment`,
           {
             method: "POST",
             headers: {
@@ -82,7 +81,7 @@ const OrderSummary = () => {
       } else if (paymentMethod === 'cod') {
         // COD (Cash on Delivery) checkout
         const response = await fetch(
-          `${getBaseUrl()}/api/orders/cod-checkout`,
+          `${import.meta.env.VITE_API_URL}/api/orders/cod-checkout`,
           {
             method: "POST",
             headers: {

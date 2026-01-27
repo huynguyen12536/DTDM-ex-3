@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
-import { getBaseUrl } from '../utils/baseURL';
 import TimelineStep from '../pages/dashboard/user/TimelineStep';
 
 const PaymentSuccess = () => {
@@ -14,7 +13,7 @@ const PaymentSuccess = () => {
     console.log('PaymentSuccess - sessionId:', sessionId, 'orderId:', orderId);
 
     if (sessionId) {
-      fetch(`${getBaseUrl()}/api/orders/confirm-payment`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/orders/confirm-payment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,8 +39,8 @@ const PaymentSuccess = () => {
           alert('Không thể xác nhận thanh toán. Vui lòng thử lại.');
         });
     } else if (orderId) {
-      console.log('Fetching order from:', `${getBaseUrl()}/api/orders/order/${orderId}`);
-      fetch(`${getBaseUrl()}/api/orders/order/${orderId}`, { credentials: 'include' })
+      console.log('Fetching order from:', `${import.meta.env.VITE_API_URL}/api/orders/order/${orderId}`);
+      fetch(`${import.meta.env.VITE_API_URL}/api/orders/order/${orderId}`, { credentials: 'include' })
         .then((res) => {
           console.log('Response status:', res.status);
           if (!res.ok) {
@@ -62,7 +61,7 @@ const PaymentSuccess = () => {
               
               // If URL says success (resultCode=0), force sync
               if (resultCode === '0') {
-                fetch(`${getBaseUrl()}/api/orders/confirm-momo/${data._id}`, { credentials: 'include' })
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/confirm-momo/${data._id}`, { credentials: 'include' })
                   .then(res => res.json())
                   .then(syncData => {
                     if (syncData.status === 'confirmed') {

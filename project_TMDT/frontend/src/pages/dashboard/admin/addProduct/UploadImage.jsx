@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { getBaseUrl } from '../../../../utils/baseURL';
 
 const UploadImage = ({ name, setImage }) => {
     const [loading, setLoading] = useState(false);
@@ -24,7 +23,11 @@ const UploadImage = ({ name, setImage }) => {
     const uploadSingleImage = (base64) => {
         setLoading(true);
         axios
-            .post(`${getBaseUrl()}/api/uploadImage`, { image: base64 })
+            .post(
+                `${import.meta.env.VITE_API_URL}/api/uploadImage`,
+                { image: base64 },
+                { withCredentials: true }
+            )
             .then((res) => {
                 const imageUrl = res.data;
                 setUrl(imageUrl);

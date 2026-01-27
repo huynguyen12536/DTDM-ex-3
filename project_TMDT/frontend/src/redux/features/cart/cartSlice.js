@@ -5,7 +5,11 @@ const loadCartFromStorage = () => {
   try {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
-      return JSON.parse(savedCart);
+      const parsed = JSON.parse(savedCart);
+      // Ensure products is always an array
+      if (parsed && Array.isArray(parsed.products)) {
+        return parsed;
+      }
     }
   } catch (error) {
     console.error('Error loading cart from localStorage:', error);
