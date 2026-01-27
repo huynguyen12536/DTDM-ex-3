@@ -109,9 +109,31 @@ main();
 
 // Base64 upload route - ĐANG SỬ DỤNG
 app.post("/api/uploadImage", (req, res) => {
+  console.log("📤 Received upload request");
+  console.log("   Body keys:", Object.keys(req.body));
+  console.log("   Image data length:", req.body.image ? req.body.image.length : 0);
+  
+  if (!req.body || !req.body.image) {
+    console.error("❌ Missing image data in request");
+    return res.status(400).json({ 
+      error: "Missing image data", 
+      message: "Please provide 'image' field in request body" 
+    });
+  }
+  
   uploadImage(req.body.image)
-    .then((url) => res.send(url))
-    .catch((err) => res.status(500).send(err));
+    .then((url) => {
+      console.log("✅ Upload successful:", url);
+      return res.json(url);
+    })
+    .catch((err) => {
+      console.error("❌ Upload failed:", err);
+      console.error("   Error details:", err.message || err);
+      return res.status(500).json({ 
+        error: "Upload failed", 
+        message: err.message || "Unknown error occurred" 
+      });
+    });
 });
 
 
