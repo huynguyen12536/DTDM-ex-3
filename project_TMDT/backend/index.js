@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const getPresignedUrl = require("./src/utils/getPresignedUrl");
+const uploadImage = require("./src/utils/uploadImage");
 
 const mongoose = require('mongoose');
 const port = process.env.PORT || 5000;
@@ -18,7 +19,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cors({
-  oorigin: process.env.FRONTEND_URL,
+  origin: process.env.FRONTEND_URL,
   credentials: true,
 }));
 
@@ -103,8 +104,15 @@ main();
 
 
 
-// presigned URL route for S3 upload
-app.post("/api/get-presigned-url", getPresignedUrl);
+// presigned URL route for S3 upload (KHÔNG SỬ DỤNG - giữ để tham khảo)
+// app.post("/api/get-presigned-url", getPresignedUrl);
+
+// Base64 upload route - ĐANG SỬ DỤNG
+app.post("/api/uploadImage", (req, res) => {
+  uploadImage(req.body.image)
+    .then((url) => res.send(url))
+    .catch((err) => res.status(500).send(err));
+});
 
 
 app.listen(port, () => {

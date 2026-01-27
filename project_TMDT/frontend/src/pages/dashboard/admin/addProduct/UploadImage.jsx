@@ -5,56 +5,60 @@ import { getBaseUrl } from '../../../../utils/baseURL';
 const UploadImage = ({ name, setImage }) => {
     const [loading, setLoading] = useState(false);
     const [url, setUrl] = useState("");
-    const [error, setError] = useState("");
 
-    const uploadImage = async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
+    // Convert file to base64
+    const convertBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
 
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-            setError('Vui lòng chọn file hình ảnh');
-            return;
-        }
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
 
-        // Validate file size (max 10MB)
-        if (file.size > 10 * 1024 * 1024) {
-            setError('File quá lớn. Tối đa 10MB');
-            return;
-        }
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
 
+    // Upload base64 image to backend
+    const uploadSingleImage = (base64) => {
         setLoading(true);
-        setError("");
-
-        try {
-            // 1. Get presigned URL from backend
-            const res = await axios.post(
-                `${getBaseUrl()}/api/get-presigned-url`,
-                { fileType: file.type },
+        axios
+            .post(
+                `${getBaseUrl()}/api/uploadImage`,
+                { image: base64 },
                 { withCredentials: true }
-            );
-
-            const { uploadUrl, publicUrl } = res.data;
-
-            // 2. Upload file directly to S3 using presigned URL
-            await fetch(uploadUrl, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': file.type,
-                },
-                body: file,
+            )
+            .then((res) => {
+                const imageUrl = res.data;
+                setUrl(imageUrl);
+                setImage(imageUrl);
+                alert("Tải ảnh lên thành công!");
+            })
+            .then(() => setLoading(false))
+            .catch((error) => {
+                console.error(error);
+                alert("Lỗi khi tải ảnh lên");
+                setLoading(false);
             });
+    };
 
-            // 3. Set the public URL
-            setUrl(publicUrl);
-            setImage(publicUrl);
-            alert('Tải ảnh lên thành công!');
+    // Handle file selection
+    const uploadImage = async (event) => {
+        const files = event.target.files;
 
-        } catch (err) {
-            console.error('Upload error:', err);
-            setError(err.response?.data?.message || 'Lỗi khi tải ảnh lên');
-        } finally {
-            setLoading(false);
+        if (files.length === 1) {
+            const base64 = await convertBase64(files[0]);
+            uploadSingleImage(base64);
+            return;
+        }
+
+        // Handle multiple files
+        for (let i = 0; i < files.length; i++) {
+            const base64 = await convertBase64(files[i]);
+            uploadSingleImage(base64);
         }
     };
 
@@ -68,17 +72,11 @@ const UploadImage = ({ name, setImage }) => {
                 name={name}
                 id={name}
                 type="file"
-                accept="image/*"
                 className="add-product-InputCSS"
             />
             {loading && (
                 <div className="mt-2 text-sm text-blue-600">
                     <p>Đang tải lên...</p>
-                </div>
-            )}
-            {error && (
-                <div className="mt-2 text-sm text-red-600">
-                    <p>{error}</p>
                 </div>
             )}
             {url && (

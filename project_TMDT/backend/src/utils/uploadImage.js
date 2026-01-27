@@ -1,10 +1,6 @@
 /**
- * ⚠️ DEPRECATED - FILE NÀY KHÔNG CÒN SỬ DỤNG
- * 
- * Lý do: Upload base64 qua backend gây lỗi với CloudFront (POST không được cache)
- * Thay thế bằng: getPresignedUrl.js - Frontend upload trực tiếp lên S3
- * 
- * Giữ lại file này để tham khảo nếu cần.
+ * Upload image to S3 using base64
+ * Nhận base64 string từ frontend và upload lên S3
  */
 
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
