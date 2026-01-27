@@ -32,7 +32,9 @@ const reviewRoutes = require('./src/reviews/reviews.router');
 const statsRoutes = require('./src/stats/stats.route');
 
 // Routes setup
-
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
 app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
