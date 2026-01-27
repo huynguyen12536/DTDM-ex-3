@@ -50,6 +50,7 @@ const OrderSummary = () => {
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
               products: productsWithId,
               email: user.email,
@@ -87,6 +88,7 @@ const OrderSummary = () => {
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
               products: productsWithId,
               email: user.email,

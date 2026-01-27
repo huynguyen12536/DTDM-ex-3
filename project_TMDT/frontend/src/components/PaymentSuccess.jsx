@@ -19,6 +19,7 @@ const PaymentSuccess = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ session_id: sessionId }),
       })
         .then((res) => {
@@ -40,7 +41,7 @@ const PaymentSuccess = () => {
         });
     } else if (orderId) {
       console.log('Fetching order from:', `${getBaseUrl()}/api/orders/order/${orderId}`);
-      fetch(`${getBaseUrl()}/api/orders/order/${orderId}`)
+      fetch(`${getBaseUrl()}/api/orders/order/${orderId}`, { credentials: 'include' })
         .then((res) => {
           console.log('Response status:', res.status);
           if (!res.ok) {
@@ -61,7 +62,7 @@ const PaymentSuccess = () => {
               
               // If URL says success (resultCode=0), force sync
               if (resultCode === '0') {
-                fetch(`${getBaseUrl()}/api/orders/confirm-momo/${data._id}`)
+                fetch(`${getBaseUrl()}/api/orders/confirm-momo/${data._id}`, { credentials: 'include' })
                   .then(res => res.json())
                   .then(syncData => {
                     if (syncData.status === 'confirmed') {
