@@ -107,16 +107,47 @@ module.exports = (image) => {
       
       const command = new PutObjectCommand(uploadParams);
       
-      await s3Client.send(command);
+      console.log(`📤 Uploading to S3: ${fileName}`);
+      console.log(`   Bucket: ${BUCKET_NAME}`);
+      console.log(`   Content-Type: ${contentType}`);
+      console.log(`   Buffer size: ${buffer.length} bytes`);
+      
+      const result = await s3Client.send(command);
+      
+      console.log(`✅ Upload successful to S3`);
+      console.log(`   ETag: ${result.ETag}`);
       
       // Tạo URL public
       const region = process.env.AWS_REGION || "ap-southeast-2";
-      const imageUrl = `https://${BUCKET_NAME}.s3.${region}.amazonaws.com/${fileName}`;
+     // Link CloudFront mà bạn dùng để phân phối ảnh từ S3
+const cloudfrontUrl = `https://d39438he2ixn2j.cloudfront.net/${fileName}`; 
+return resolve(cloudfrontUrl);
+      
+      console.log(`   URL: ${imageUrl}`);
       
       return resolve(imageUrl);
     } catch (error) {
-      console.error("S3 Upload Error:", error.message);
-      return reject({ message: error.message });
+      console.error("❌ S3 Upload Error:");
+      console.error("   Message:", error.message);
+      console.error("   Code:", error.Code || error.code);
+      console.error("   Stack:", error.stack);
+      return reject({ 
+        message: error.message,
+        code: error.Code || error.code,
+        details: error.toString()
+      });
     }
   });
 };
+
+
+
+
+
+
+
+
+
+
+
+
