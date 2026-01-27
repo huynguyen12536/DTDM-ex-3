@@ -1,3 +1,12 @@
+/**
+ * ⚠️ DEPRECATED - FILE NÀY KHÔNG CÒN SỬ DỤNG
+ * 
+ * Lý do: Upload base64 qua backend gây lỗi với CloudFront (POST không được cache)
+ * Thay thế bằng: getPresignedUrl.js - Frontend upload trực tiếp lên S3
+ * 
+ * Giữ lại file này để tham khảo nếu cần.
+ */
+
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require("uuid");
 

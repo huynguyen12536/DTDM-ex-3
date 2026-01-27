@@ -5,7 +5,7 @@ require("dotenv").config();
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
-const uploadImage = require("./src/utils/uploadImage");
+const getPresignedUrl = require("./src/utils/getPresignedUrl");
 
 const mongoose = require('mongoose');
 const port = process.env.PORT || 5000;
@@ -103,12 +103,8 @@ main();
 
 
 
-// upload image routes
-app.post("/api/uploadImage", (req, res) => {
-  uploadImage(req.body.image)
-    .then((url) => res.send(url))
-    .catch((err) => res.status(500).send(err));
-});
+// presigned URL route for S3 upload
+app.post("/api/get-presigned-url", getPresignedUrl);
 
 
 app.listen(port, () => {
