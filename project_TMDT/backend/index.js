@@ -114,15 +114,15 @@ app.post("/api/uploadImage", (req, res) => {
   console.log("📤 Received upload request");
   console.log("   Body keys:", Object.keys(req.body));
   console.log("   Image data length:", req.body.image ? req.body.image.length : 0);
-  
+
   if (!req.body || !req.body.image) {
     console.error("❌ Missing image data in request");
-    return res.status(400).json({ 
-      error: "Missing image data", 
-      message: "Please provide 'image' field in request body" 
+    return res.status(400).json({
+      error: "Missing image data",
+      message: "Please provide 'image' field in request body"
     });
   }
-  
+
   uploadImage(req.body.image)
     .then((url) => {
       console.log("✅ Upload successful:", url);
@@ -131,9 +131,9 @@ app.post("/api/uploadImage", (req, res) => {
     .catch((err) => {
       console.error("❌ Upload failed:", err);
       console.error("   Error details:", err.message || err);
-      return res.status(500).json({ 
-        error: "Upload failed", 
-        message: err.message || "Unknown error occurred" 
+      return res.status(500).json({
+        error: "Upload failed",
+        message: err.message || "Unknown error occurred"
       });
     });
 });
@@ -141,4 +141,7 @@ app.post("/api/uploadImage", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
+});
+app.listen(3000, '0.0.0.0', () => {
+  console.log('Server running on port 3000');
 });
