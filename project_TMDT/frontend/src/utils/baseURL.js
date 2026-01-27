@@ -1,10 +1,10 @@
 
 export const getBaseUrl = () => {
-    // In production (Docker), use relative path - nginx will proxy
-    // In development (npm run dev), connect directly to backend
-    if (import.meta.env.PROD) {
-      return "";
-    }
-    return "http://localhost:5000";
-  };
-   
+  // Always use VITE_API_URL if defined (for both dev and production)
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // Fallback for local development
+  return "http://localhost:5000";
+};
